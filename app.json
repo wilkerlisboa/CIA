@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "SEPEA - CIA - Calculadora de Indicadores Ambientais",
+    "name": "Calculadora de Indicadores Ambientais",
     "slug": "snack-05905268-89e2-4305-a3b5-c6c5e0ec2e16",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/logo.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/logo.png",
-      "resizeMode": "contain",
+      "image": "./assets/splash.png",
+      "resizeMode": "container",
       "backgroundColor": "#ffffff"
     },
     "ios": {
@@ -16,9 +16,10 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/logo.png",
-        "backgroundColor": "#ffffff"
-      }
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "resizeMode": "container"
+      },
+      "package": "com.wilkerlisboa.snack0590526889e24305a3b5c6c5e0ec2e16"
     },
     "web": {
       "favicon": "./assets/logo.png"

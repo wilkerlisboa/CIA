@@ -1,32 +1,21 @@
-import { Text, View, StyleSheet, Image } from 'react-native';
+import React from 'react';
+import { Text, View, StyleSheet, Image, TouchableOpacity, Linking } from 'react-native';
+import styles from './style';
 
 export default function Inicio() {
+  const openLink = () => {
+    // Substitua 'https://seulinkaqui.com' pelo link desejado
+    Linking.openURL('http://www.tuxtu.com.br/sepea');
+  };
+
   return (
-    <View style={styles.container}>
-      <Image style={styles.logo} source={require('../../assets/logo.png')} />
-      <Text style={styles.paragraph}>
-        SEPEA - CIA - Calculadora de Indicadores Ambientais
-      </Text>
-    </View>
+    <TouchableOpacity onPress={openLink}>
+      <View style={styles.container}>
+        <Image style={styles.logo} source={require('../../assets/adaptative.png')} resizeMode="cover" />
+        <Text style={styles.paragraph}>
+          Calculadora de Indicadores Ambientais
+        </Text>
+      </View>
+    </TouchableOpacity>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 24,
-  },
-  paragraph: {
-    margin: 24,
-    marginTop: 30,
-    fontSize: 14,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  logo: {
-    height: 130,
-    width: 137  ,
-
-  }
-});

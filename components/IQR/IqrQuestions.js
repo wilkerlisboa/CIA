@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Card } from 'react-native-paper';
-import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 
 export default function IqrQuestions() {
   const [answers, setAnswers] = useState({
@@ -25,7 +24,9 @@ export default function IqrQuestions() {
     question19: null,
   });
 
-  const [average, setAverage] = useState(null);
+  const [iqr, setIqr] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [classification, setClassification] = useState({ text: '', color: 'transparent', backgroundColor: 'transparent' });
 
   const handleAnswer = (question, value) => {
     setAnswers((prevAnswers) => ({
@@ -34,351 +35,402 @@ export default function IqrQuestions() {
     }));
   };
 
-  const calcularMedia = () => {
+  const calcularIQR = () => {
     const total = Object.values(answers).reduce((acc, value) => acc + (value !== null ? value : 0), 0);
     const count = Object.values(answers).filter((value) => value !== null).length;
-    const media = count > 0 ? (total / count) * 100 : 0;
-    const mediaArredondada = Math.round(media);
-    setAverage(mediaArredondada);
+    const iqrValue = count > 0 ? (total / count) * 100 : 0;
+    const iqrArredondado = Math.round(iqrValue);
+    setIqr(iqrArredondado);
+
+    // Definir classificação
+    const result = getClassification(iqrArredondado);
+    setClassification(result);
+
+    setModalVisible(true); // Mostrar modal após o cálculo
   };
+
   const getClassification = (score) => {
     if (score < 60) {
-      return { text: 'Aterro Inadequado', color: 'red' };
+      return { text: 'Aterro Inadequado', color: 'white', backgroundColor: 'red'};
     } else if (score >= 60 && score < 80) {
-      return { text: 'Aterro Controlado', color: '#FFC100' };
+      return { text: 'Aterro Controlado', color: 'white', backgroundColor: '#FFC100' };
     } else if (score >= 80 && score <= 100) {
-      return { text: 'Aterro Adequado', color: 'blue' };
+      return { text: 'Aterro Adequado', color: 'white', backgroundColor: 'blue' };
     } else {
-      return { text: '', color: 'transparent' };
+      return { text: '', color: 'transparent', backgroundColor: 'transparent' };
     }
   };
 
-  const classification = average !== null ? getClassification(average) : null;
+  const closeModal = () => {
+    setModalVisible(false);
+    setIqr(null); // Limpa o estado do IQR ao fechar a modal
+    setClassification(
+      
+      { text: '', color: 'transparent', backgroundColor: 'transparent' }); // Limpa a classificação ao fechar a modal
+  };
 
   return (
     <View style={styles.container}>
-      {/* pergunta 1 */}
-      <Text style={styles.question}>O isolamento visual do empreendimento frente à vizinhança é adequado?</Text>
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity
-          style={[styles.button, answers.question1 === 1 && styles.selectedButton]}
-          onPress={() => handleAnswer('question1', 1)}
-        >
-          <Text style={[styles.buttonText, answers.question1 === 1 && styles.selectedButtonText]}>Sim</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, answers.question1 === 0 && styles.selectedButton]}
-          onPress={() => handleAnswer('question1', 0)}
-        >
-          <Text style={[styles.buttonText, answers.question1 === 0 && styles.selectedButtonText]}>Não</Text>
-        </TouchableOpacity>
+      {/* PERGUNTA 1 */}
+      <View style={{ marginBottom: 20 }}>
+        <Text style={styles.question}>O isolamento visual do empreendimento frente à vizinhança é adequado?</Text>
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity
+            style={[styles.button, answers.question1 === 1 && styles.selectedButton]}
+            onPress={() => handleAnswer('question1', 1)}
+          >
+            <Text style={[styles.buttonText, answers.question1 === 1 && styles.selectedButtonText]}>Sim</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, answers.question1 === 0 && styles.selectedButton, answers.question1 === 0 && styles.selectedButtonNo]}
+            onPress={() => handleAnswer('question1', 0)}
+          >
+            <Text style={[styles.buttonText, answers.question1 === 0 && styles.selectedButtonText]}>Não</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-
-      {/* pergunta 2 */}
-      <Text style={styles.question}>Na portaria do empreendimento há balança instalada e funcionando?</Text>
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity
-          style={[styles.button, answers.question2 === 1 && styles.selectedButton]}
-          onPress={() => handleAnswer('question2', 1)}
-        >
-          <Text style={[styles.buttonText, answers.question2 === 1 && styles.selectedButtonText]}>Sim</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, answers.question2 === 0 && styles.selectedButton]}
-          onPress={() => handleAnswer('question2', 0)}
-        >
-          <Text style={[styles.buttonText, answers.question2 === 0 && styles.selectedButtonText]}>Não</Text>
-        </TouchableOpacity>
+      {/* PERGUNTA 2 */}
+      <View style={{ marginBottom: 20 }}>
+        <Text style={styles.question}>Na portaria do empreendimento há balança instalada e funcionando?</Text>
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity
+            style={[styles.button, answers.question2 === 1 && styles.selectedButton]}
+            onPress={() => handleAnswer('question2', 1)}
+          >
+            <Text style={[styles.buttonText, answers.question2 === 1 && styles.selectedButtonText]}>Sim</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, answers.question2 === 0 && styles.selectedButton, answers.question2 === 0 && styles.selectedButtonNo]}
+            onPress={() => handleAnswer('question2', 0)}
+          >
+            <Text style={[styles.buttonText, answers.question2 === 0 && styles.selectedButtonText]}>Não</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-
-      {/* pergunta 3 */}
-      <Text style={styles.question}>O empreendimento tem em toda sua área cercamento?</Text>
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity
-          style={[styles.button, answers.question3 === 1 && styles.selectedButton]}
-          onPress={() => handleAnswer('question3', 1)}
-        >
-          <Text style={[styles.buttonText, answers.question3 === 1 && styles.selectedButtonText]}>Sim</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, answers.question3 === 0 && styles.selectedButton]}
-          onPress={() => handleAnswer('question3', 0)}
-        >
-          <Text style={[styles.buttonText, answers.question3 === 0 && styles.selectedButtonText]}>Não</Text>
-        </TouchableOpacity>
+      {/* PERGUNTA 3 */}
+      <View style={{ marginBottom: 20 }}>
+        <Text style={styles.question}>O empreendimento tem em toda sua área cercamento?</Text>
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity
+            style={[styles.button, answers.question3 === 1 && styles.selectedButton]}
+            onPress={() => handleAnswer('question3', 1)}
+          >
+            <Text style={[styles.buttonText, answers.question3 === 1 && styles.selectedButtonText]}>Sim</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, answers.question3 === 0 && styles.selectedButton, answers.question3 === 0 && styles.selectedButtonNo]}
+            onPress={() => handleAnswer('question3', 0)}
+          >
+            <Text style={[styles.buttonText, answers.question3 === 0 && styles.selectedButtonText]}>Não</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      {/* pergunta 4 */}
-      <Text style={styles.question}>Os demais equipamentos do empreedimento são adequados?</Text>
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity
-          style={[styles.button, answers.question4 === 1 && styles.selectedButton]}
-          onPress={() => handleAnswer('question4', 1)}
-        >
-          <Text style={[styles.buttonText, answers.question4 === 1 && styles.selectedButtonText]}>Sim</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, answers.question4 === 0 && styles.selectedButton]}
-          onPress={() => handleAnswer('question4', 0)}
-        >
-          <Text style={[styles.buttonText, answers.question4 === 0 && styles.selectedButtonText]}>Não</Text>
-        </TouchableOpacity>
+      {/* PERGUNTA 4 */}
+      <View style={{ marginBottom: 20 }}>
+        <Text style={styles.question}>Os demais equipamentos do empreendimento são adequados?</Text>
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity
+            style={[styles.button, answers.question4 === 1 && styles.selectedButton]}
+            onPress={() => handleAnswer('question4', 1)}
+          >
+            <Text style={[styles.buttonText, answers.question4 === 1 && styles.selectedButtonText]}>Sim</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, answers.question4 === 0 && styles.selectedButton, answers.question4 === 0 && styles.selectedButtonNo]}
+            onPress={() => handleAnswer('question4', 0)}
+          >
+            <Text style={[styles.buttonText, answers.question4 === 0 && styles.selectedButtonText]}>Não</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      {/* pergunta 5 */}
-      <Text style={styles.question}>A qualidade das vias de acesso até o empreendimento são adequadas?</Text>
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity
-          style={[styles.button, answers.question5 === 1 && styles.selectedButton]}
-          onPress={() => handleAnswer('question5', 1)}
-        >
-          <Text style={[styles.buttonText, answers.question5 === 1 && styles.selectedButtonText]}>Sim</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, answers.question5 === 0 && styles.selectedButton]}
-          onPress={() => handleAnswer('question5', 0)}
-        >
-          <Text style={[styles.buttonText, answers.question5 === 0 && styles.selectedButtonText]}>Não</Text>
-        </TouchableOpacity>
+      {/* PERGUNTA 5 */}
+      <View style={{ marginBottom: 20 }}>
+        <Text style={styles.question}>A qualidade das vias de acesso até o empreendimento são adequadas?</Text>
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity
+            style={[styles.button, answers.question5 === 1 && styles.selectedButton]}
+            onPress={() => handleAnswer('question5', 1)}
+          >
+            <Text style={[styles.buttonText, answers.question5 === 1 && styles.selectedButtonText]}>Sim</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, answers.question5 === 0 && styles.selectedButton, answers.question5 === 0 && styles.selectedButtonNo]}
+            onPress={() => handleAnswer('question5', 0)}
+          >
+            <Text style={[styles.buttonText, answers.question5 === 0 && styles.selectedButtonText]}>Não</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      {/* pergunta 6 */}
-      <Text style={styles.question}>O acesso à frente de trabalho dentro do empreendimento é adequado?</Text>
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity
-          style={[styles.button, answers.question6 === 1 && styles.selectedButton]}
-          onPress={() => handleAnswer('question6', 1)}
-        >
-          <Text style={[styles.buttonText, answers.question6 === 1 && styles.selectedButtonText]}>Sim</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, answers.question6 === 0 && styles.selectedButton]}
-          onPress={() => handleAnswer('question6', 0)}
-        >
-          <Text style={[styles.buttonText, answers.question6 === 0 && styles.selectedButtonText]}>Não</Text>
-        </TouchableOpacity>
+      {/* PERGUNTA 6 */}
+      <View style={{ marginBottom: 20 }}>
+        <Text style={styles.question}>O acesso à frente de trabalho dentro do empreendimento é adequado?</Text>
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity
+            style={[styles.button, answers.question6 === 1 && styles.selectedButton]}
+            onPress={() => handleAnswer('question6', 1)}
+          >
+            <Text style={[styles.buttonText, answers.question6 === 1 && styles.selectedButtonText]}>Sim</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, answers.question6 === 0 && styles.selectedButton, answers.question6 === 0 && styles.selectedButtonNo]}
+            onPress={() => handleAnswer('question6', 0)}
+          >
+            <Text style={[styles.buttonText, answers.question6 === 0 && styles.selectedButtonText]}>Não</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      {/* pergunta 7 */}
-      <Text style={styles.question}>Existe controle do recebimento de resíduos empreendimento?</Text>
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity
-          style={[styles.button, answers.question7 === 1 && styles.selectedButton]}
-          onPress={() => handleAnswer('question7', 1)}
-        >
-          <Text style={[styles.buttonText, answers.question7 === 1 && styles.selectedButtonText]}>Sim</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, answers.question7 === 0 && styles.selectedButton]}
-          onPress={() => handleAnswer('question7', 0)}
-        >
-          <Text style={[styles.buttonText, answers.question7 === 0 && styles.selectedButtonText]}>Não</Text>
-        </TouchableOpacity>
+      {/* PERGUNTA 7 */}
+      <View style={{ marginBottom: 20 }}>
+        <Text style={styles.question}>Existe controle do recebimento de resíduos empreendimento?</Text>
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity
+            style={[styles.button, answers.question7 === 1 && styles.selectedButton]}
+            onPress={() => handleAnswer('question7', 1)}
+          >
+            <Text style={[styles.buttonText, answers.question7 === 1 && styles.selectedButtonText]}>Sim</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, answers.question7 === 0 && styles.selectedButton, answers.question7 === 0 && styles.selectedButtonNo]}
+            onPress={() => handleAnswer('question7', 0)}
+          >
+            <Text style={[styles.buttonText, answers.question7 === 0 && styles.selectedButtonText]}>Não</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      {/* pergunta 8 */}
-      <Text style={styles.question}>Há ocorrência de resíduos descobertos na área do empreendimento?</Text>
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity
-          style={[styles.button, answers.question8 === 1 && styles.selectedButton]}
-          onPress={() => handleAnswer('question8', 1)}
-        >
-          <Text style={[styles.buttonText, answers.question8 === 1 && styles.selectedButtonText]}>Sim</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, answers.question8 === 0 && styles.selectedButton]}
-          onPress={() => handleAnswer('question8', 0)}
-        >
-          <Text style={[styles.buttonText, answers.question8 === 0 && styles.selectedButtonText]}>Não</Text>
-        </TouchableOpacity>
+       {/* PERGUNTA 8 */}
+      <View style={{ marginBottom: 20 }}>
+        <Text style={styles.question}>A área de armazenamento de resíduos é adequada?</Text>
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity
+            style={[styles.button, answers.question8 === 1 && styles.selectedButton]}
+            onPress={() => handleAnswer('question8', 1)}
+          >
+            <Text style={[styles.buttonText, answers.question8 === 1 && styles.selectedButtonText]}>Sim</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, answers.question8 === 0 && styles.selectedButton, answers.question8 === 0 && styles.selectedButtonNo]}
+            onPress={() => handleAnswer('question8', 0)}
+          >
+            <Text style={[styles.buttonText, answers.question8 === 0 && styles.selectedButtonText]}>Não</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      {/* pergunta 9 */}
-      <Text style={styles.question}>Há presença de urubu e gaivotas na área do empreendimento?</Text>
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity
-          style={[styles.button, answers.question9 === 1 && styles.selectedButton]}
-          onPress={() => handleAnswer('question9', 1)}
-        >
-          <Text style={[styles.buttonText, answers.question9 === 1 && styles.selectedButtonText]}>Sim</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, answers.question9 === 0 && styles.selectedButton]}
-          onPress={() => handleAnswer('question9', 0)}
-        >
-          <Text style={[styles.buttonText, answers.question9 === 0 && styles.selectedButtonText]}>Não</Text>
-        </TouchableOpacity>
+      {/* PERGUNTA 9 */}
+      <View style={{ marginBottom: 20 }}>
+        <Text style={styles.question}>Existe drenagem de chorume no empreendimento?</Text>
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity
+            style={[styles.button, answers.question9 === 1 && styles.selectedButton]}
+            onPress={() => handleAnswer('question9', 1)}
+          >
+            <Text style={[styles.buttonText, answers.question9 === 1 && styles.selectedButtonText]}>Sim</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, answers.question9 === 0 && styles.selectedButton, answers.question9 === 0 && styles.selectedButtonNo]}
+            onPress={() => handleAnswer('question9', 0)}
+          >
+            <Text style={[styles.buttonText, answers.question9 === 0 && styles.selectedButtonText]}>Não</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      {/* pergunta 10 */}
-      <Text style={styles.question}>Há presença de mosca em grande quantidade na área do empreendimento?</Text>
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity
-          style={[styles.button, answers.question10 === 1 && styles.selectedButton]}
-          onPress={() => handleAnswer('question10', 1)}
-        >
-          <Text style={[styles.buttonText, answers.question10 === 1 && styles.selectedButtonText]}>Sim</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, answers.question10 === 0 && styles.selectedButton]}
-          onPress={() => handleAnswer('question10', 0)}
-        >
-          <Text style={[styles.buttonText, answers.question10 === 0 && styles.selectedButtonText]}>Não</Text>
-        </TouchableOpacity>
+      {/* PERGUNTA 10 */}
+      <View style={{ marginBottom: 20 }}>
+        <Text style={styles.question}>O sistema de drenagem de chorume está funcionando?</Text>
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity
+            style={[styles.button, answers.question10 === 1 && styles.selectedButton]}
+            onPress={() => handleAnswer('question10', 1)}
+          >
+            <Text style={[styles.buttonText, answers.question10 === 1 && styles.selectedButtonText]}>Sim</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, answers.question10 === 0 && styles.selectedButton, answers.question10 === 0 && styles.selectedButtonNo]}
+            onPress={() => handleAnswer('question10', 0)}
+          >
+            <Text style={[styles.buttonText, answers.question10 === 0 && styles.selectedButtonText]}>Não</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      {/* pergunta 11 */}
-      <Text style={styles.question}>Há a presença de catadores na área do empreendimento?</Text>
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity
-          style={[styles.button, answers.question11 === 1 && styles.selectedButton]}
-          onPress={() => handleAnswer('question11', 1)}
-        >
-          <Text style={[styles.buttonText, answers.question11 === 1 && styles.selectedButtonText]}>Sim</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, answers.question11 === 0 && styles.selectedButton]}
-          onPress={() => handleAnswer('question11', 0)}
-        >
-          <Text style={[styles.buttonText, answers.question11 === 0 && styles.selectedButtonText]}>Não</Text>
-        </TouchableOpacity>
+      {/* PERGUNTA 11 */}
+      <View style={{ marginBottom: 20 }}>
+        <Text style={styles.question}>Os drenos horizontais e verticais de gases estão adequados?</Text>
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity
+            style={[styles.button, answers.question11 === 1 && styles.selectedButton]}
+            onPress={() => handleAnswer('question11', 1)}
+          >
+            <Text style={[styles.buttonText, answers.question11 === 1 && styles.selectedButtonText]}>Sim</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, answers.question11 === 0 && styles.selectedButton, answers.question11 === 0 && styles.selectedButtonNo]}
+            onPress={() => handleAnswer('question11', 0)}
+          >
+            <Text style={[styles.buttonText, answers.question11 === 0 && styles.selectedButtonText]}>Não</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      {/* pergunta 12 */}
-      <Text style={styles.question}>Há a presença de animais na área do empreendimento?</Text>
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity
-          style={[styles.button, answers.question12 === 1 && styles.selectedButton]}
-          onPress={() => handleAnswer('question12', 1)}
-        >
-          <Text style={[styles.buttonText, answers.question12 === 1 && styles.selectedButtonText]}>Sim</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, answers.question12 === 0 && styles.selectedButton]}
-          onPress={() => handleAnswer('question12', 0)}
-        >
-          <Text style={[styles.buttonText, answers.question12 === 0 && styles.selectedButtonText]}>Não</Text>
-        </TouchableOpacity>
+      {/* PERGUNTA 12 */}
+      <View style={{ marginBottom: 20 }}>
+        <Text style={styles.question}>O sistema de captação de gás está em funcionamento?</Text>
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity
+            style={[styles.button, answers.question12 === 1 && styles.selectedButton]}
+            onPress={() => handleAnswer('question12', 1)}
+          >
+            <Text style={[styles.buttonText, answers.question12 === 1 && styles.selectedButtonText]}>Sim</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, answers.question12 === 0 && styles.selectedButton, answers.question12 === 0 && styles.selectedButtonNo]}
+            onPress={() => handleAnswer('question12', 0)}
+          >
+            <Text style={[styles.buttonText, answers.question12 === 0 && styles.selectedButtonText]}>Não</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      {/* pergunta 13 */}
-      <Text style={styles.question}>O empreendimento possui sistema de drenagem pluvial adequado?</Text>
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity
-          style={[styles.button, answers.question13 === 1 && styles.selectedButton]}
-          onPress={() => handleAnswer('question13', 1)}
-        >
-          <Text style={[styles.buttonText, answers.question13 === 1 && styles.selectedButtonText]}>Sim</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, answers.question13 === 0 && styles.selectedButton]}
-          onPress={() => handleAnswer('question13', 0)}
-        >
-          <Text style={[styles.buttonText, answers.question13 === 0 && styles.selectedButtonText]}>Não</Text>
-        </TouchableOpacity>
+      {/* PERGUNTA 13 */}
+      <View style={{ marginBottom: 20 }}>
+        <Text style={styles.question}>O sistema de cobertura de resíduos está adequado?</Text>
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity
+            style={[styles.button, answers.question13 === 1 && styles.selectedButton]}
+            onPress={() => handleAnswer('question13', 1)}
+          >
+            <Text style={[styles.buttonText, answers.question13 === 1 && styles.selectedButtonText]}>Sim</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, answers.question13 === 0 && styles.selectedButton, answers.question13 === 0 && styles.selectedButtonNo]}
+            onPress={() => handleAnswer('question13', 0)}
+          >
+            <Text style={[styles.buttonText, answers.question13 === 0 && styles.selectedButtonText]}>Não</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      {/* pergunta 14 */}
-      <Text style={styles.question}>O empreendimento possui sistema de drenagem de lixiviados adequados?</Text>
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity
-          style={[styles.button, answers.question14 === 1 && styles.selectedButton]}
-          onPress={() => handleAnswer('question14', 1)}
-        >
-          <Text style={[styles.buttonText, answers.question14 === 1 && styles.selectedButtonText]}>Sim</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, answers.question14 === 0 && styles.selectedButton]}
-          onPress={() => handleAnswer('question14', 0)}
-        >
-          <Text style={[styles.buttonText, answers.question14 === 0 && styles.selectedButtonText]}>Não</Text>
-        </TouchableOpacity>
+      {/* PERGUNTA 14 */}
+      <View style={{ marginBottom: 20 }}>
+        <Text style={styles.question}>Existe refeitório no empreendimento?</Text>
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity
+            style={[styles.button, answers.question14 === 1 && styles.selectedButton]}
+            onPress={() => handleAnswer('question14', 1)}
+          >
+            <Text style={[styles.buttonText, answers.question14 === 1 && styles.selectedButtonText]}>Sim</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, answers.question14 === 0 && styles.selectedButton, answers.question14 === 0 && styles.selectedButtonNo]}
+            onPress={() => handleAnswer('question14', 0)}
+          >
+            <Text style={[styles.buttonText, answers.question14 === 0 && styles.selectedButtonText]}>Não</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      {/* pergunta 15 */}
-      <Text style={styles.question}>O empreendimento possui sistema de drenagem de gases adequado?</Text>
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity
-          style={[styles.button, answers.question15 === 1 && styles.selectedButton]}
-          onPress={() => handleAnswer('question15', 1)}
-        >
-          <Text style={[styles.buttonText, answers.question15 === 1 && styles.selectedButtonText]}>Sim</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, answers.question15 === 0 && styles.selectedButton]}
-          onPress={() => handleAnswer('question15', 0)}
-        >
-          <Text style={[styles.buttonText, answers.question15 === 0 && styles.selectedButtonText]}>Não</Text>
-        </TouchableOpacity>
+      {/* PERGUNTA 15 */}
+      <View style={{ marginBottom: 20 }}>
+        <Text style={styles.question}>Os trabalhadores usam equipamentos de proteção individual (EPI) no empreendimento?</Text>
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity
+            style={[styles.button, answers.question15 === 1 && styles.selectedButton]}
+            onPress={() => handleAnswer('question15', 1)}
+          >
+            <Text style={[styles.buttonText, answers.question15 === 1 && styles.selectedButtonText]}>Sim</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, answers.question15 === 0 && styles.selectedButton, answers.question15 === 0 && styles.selectedButtonNo]}
+            onPress={() => handleAnswer('question15', 0)}
+          >
+            <Text style={[styles.buttonText, answers.question15 === 0 && styles.selectedButtonText]}>Não</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      {/* pergunta 16 */}
-      <Text style={styles.question}>O empreendimento possui sistema de tratamento de lixiviado adequado?</Text>
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity
-          style={[styles.button, answers.question16 === 1 && styles.selectedButton]}
-          onPress={() => handleAnswer('question16', 1)}
-        >
-          <Text style={[styles.buttonText, answers.question16 === 1 && styles.selectedButtonText]}>Sim</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, answers.question16 === 0 && styles.selectedButton]}
-          onPress={() => handleAnswer('question16', 0)}
-        >
-          <Text style={[styles.buttonText, answers.question16 === 0 && styles.selectedButtonText]}>Não</Text>
-        </TouchableOpacity>
+      {/* PERGUNTA 16 */}
+      <View style={{ marginBottom: 20 }}>
+        <Text style={styles.question}>Os trabalhadores recebem treinamento adequado no empreendimento?</Text>
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity
+            style={[styles.button, answers.question16 === 1 && styles.selectedButton]}
+            onPress={() => handleAnswer('question16', 1)}
+          >
+            <Text style={[styles.buttonText, answers.question16 === 1 && styles.selectedButtonText]}>Sim</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, answers.question16 === 0 && styles.selectedButton, answers.question16 === 0 && styles.selectedButtonNo]}
+            onPress={() => handleAnswer('question16', 0)}
+          >
+            <Text style={[styles.buttonText, answers.question16 === 0 && styles.selectedButtonText]}>Não</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      {/* pergunta 17 */}
-      <Text style={styles.question}>O empreendimento possui sistema de tratamento de gases adequado?</Text>
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity
-          style={[styles.button, answers.question17 === 1 && styles.selectedButton]}
-          onPress={() => handleAnswer('question17', 1)}
-        >
-          <Text style={[styles.buttonText, answers.question17 === 1 && styles.selectedButtonText]}>Sim</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, answers.question17 === 0 && styles.selectedButton]}
-          onPress={() => handleAnswer('question17', 0)}
-        >
-          <Text style={[styles.buttonText, answers.question17 === 0 && styles.selectedButtonText]}>Não</Text>
-        </TouchableOpacity>
+      {/* PERGUNTA 17 */}
+      <View style={{ marginBottom: 20 }}>
+        <Text style={styles.question}>Existe área de disposição final de resíduos no empreendimento?</Text>
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity
+            style={[styles.button, answers.question17 === 1 && styles.selectedButton]}
+            onPress={() => handleAnswer('question17', 1)}
+          >
+            <Text style={[styles.buttonText, answers.question17 === 1 && styles.selectedButtonText]}>Sim</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, answers.question17 === 0 && styles.selectedButton, answers.question17 === 0 && styles.selectedButtonNo]}
+            onPress={() => handleAnswer('question17', 0)}
+          >
+            <Text style={[styles.buttonText, answers.question17 === 0 && styles.selectedButtonText]}>Não</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      {/* pergunta 18 */}
-      <Text style={styles.question}>O empreendimento possui plano de emergência?</Text>
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity
-          style={[styles.button, answers.question18 === 1 && styles.selectedButton]}
-          onPress={() => handleAnswer('question18', 1)}
-        >
-          <Text style={[styles.buttonText, answers.question18 === 1 && styles.selectedButtonText]}>Sim</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, answers.question18 === 0 && styles.selectedButton]}
-          onPress={() => handleAnswer('question18', 0)}
-        >
-          <Text style={[styles.buttonText, answers.question18 === 0 && styles.selectedButtonText]}>Não</Text>
-        </TouchableOpacity>
+      {/* PERGUNTA 18 */}
+      <View style={{ marginBottom: 20 }}>
+        <Text style={styles.question}>O acesso à área de disposição final de resíduos é adequado?</Text>
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity
+            style={[styles.button, answers.question18 === 1 && styles.selectedButton]}
+            onPress={() => handleAnswer('question18', 1)}
+          >
+            <Text style={[styles.buttonText, answers.question18 === 1 && styles.selectedButtonText]}>Sim</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, answers.question18 === 0 && styles.selectedButton, answers.question18 === 0 && styles.selectedButtonNo]}
+            onPress={() => handleAnswer('question18', 0)}
+          >
+            <Text style={[styles.buttonText, answers.question18 === 0 && styles.selectedButtonText]}>Não</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      {/* pergunta 19 */}
-      <Text style={styles.question}>O empreendimento possui iluminação adequada para trabalho noturno?</Text>
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity
-          style={[styles.button, answers.question19 === 1 && styles.selectedButton]}
-          onPress={() => handleAnswer('question19', 1)}
-        >
-          <Text style={[styles.buttonText, answers.question19 === 1 && styles.selectedButtonText]}>Sim</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, answers.question19 === 0 && styles.selectedButton]}
-          onPress={() => handleAnswer('question19', 0)}
-        >
-          <Text style={[styles.buttonText, answers.question19 === 0 && styles.selectedButtonText]}>Não</Text>
-        </TouchableOpacity>
+      {/* PERGUNTA 19 */}
+      <View style={{ marginBottom: 20 }}>
+        <Text style={styles.question}>O empreendimento possui licença ambiental válida?</Text>
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity
+            style={[styles.button, answers.question19 === 1 && styles.selectedButton]}
+            onPress={() => handleAnswer('question19', 1)}
+          >
+            <Text style={[styles.buttonText, answers.question19 === 1 && styles.selectedButtonText]}>Sim</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button, answers.question19 === 0 && styles.selectedButton, answers.question19 === 0 && styles.selectedButtonNo]}
+            onPress={() => handleAnswer('question19', 0)}
+          >
+            <Text style={[styles.buttonText, answers.question19 === 0 && styles.selectedButtonText]}>Não</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-
-
-      {/* BOTÃO DE CALCULO */}
-      <TouchableOpacity style={styles.buttonCalcular} onPress={calcularMedia}>
-        <Text style={styles.selectedButtonText}>Realizar Estudo</Text>
+      {/* BOTÃO */}
+      <TouchableOpacity style={styles.buttonCalcular} onPress={calcularIQR}>
+        <Text style={styles.selectedButtonText}>Calcular Índice de Qualidade de Resíduo Sólido</Text>
       </TouchableOpacity>
 
-      {/* Resultado */}
-      {average !== null && (
-        <View style={styles.resultContainer}>
-          <Text style={styles.resultado}>Média: {average} % 👇</Text>
-          <View style={[styles.classificationContainer, { backgroundColor: classification.color }]}>
-            <Text style={styles.classificationText}>{classification.text}</Text>
+      <Modal visible={modalVisible} animationType="slide" transparent>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.resultado}>{`IQR: ${iqr} % 👇`}</Text>
+            <Text style={[styles.classificationText, { backgroundColor: classification.backgroundColor }]}>
+              {classification.text}
+            </Text>
+            <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+              <Text style={styles.closeButtonText}>Fechar</Text>
+            </TouchableOpacity>
           </View>
         </View>
-      )}
+      </Modal>
     </View>
   );
 }
@@ -387,64 +439,94 @@ const styles = StyleSheet.create({
   container: {
     padding: 24,
     backgroundColor: '#fff',
-    alignItems: 'center',
   },
   question: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginTop: 16,
+    marginBottom: 8,
     textAlign: 'center',
   },
   buttonsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginTop: 8,
-    alignItems: 'center',
   },
   button: {
     paddingVertical: 10,
     paddingHorizontal: 20,
+    backgroundColor: '#f0f0f0',
     borderRadius: 5,
     borderWidth: 1,
     borderColor: '#ccc',
-    alignItems: 'center',
-    marginHorizontal: 10,
-  },
-  buttonCalcular: {
-    marginTop: 50,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    backgroundColor: '#238636',
+    flex: 1,
+    marginHorizontal: 5,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  buttonText: {
+    fontSize: 16,
+    color: '#000',
   },
   selectedButton: {
     backgroundColor: '#238636',
     borderColor: '#238636',
   },
+  selectedButtonNo: {
+    backgroundColor: 'red',
+    borderColor: 'red',
+  },
   selectedButtonText: {
     color: '#fff',
   },
-  buttonText: {
-    fontSize: 16,
-  },
-  resultContainer: {
-    marginTop: 30,
+  buttonCalcular: {
+    marginTop: 20,
+    marginBottom: 50,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    backgroundColor: '#238636',
     alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 3,
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    padding: 20,
+    paddingHorizontal: 80,
+    borderRadius: 10,
+    alignItems: 'center',
+    elevation: 5,
   },
   resultado: {
     fontSize: 18,
     fontWeight: 'bold',
-  },
-  classificationContainer: {
-    marginTop: 10,
-    padding: 10,
-    borderRadius: 5,
+    marginBottom: 10,
   },
   classificationText: {
-    fontSize: 18,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    marginTop: 10,
+    fontSize: 16,
     fontWeight: 'bold',
+    color: '#fff',
+    borderRadius: 5,
+    textAlign: 'center',
+  },
+  closeButton: {
+    marginTop: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    backgroundColor: '#238636',
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    fontSize: 16,
     color: '#fff',
   },
 });
