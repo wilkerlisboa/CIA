@@ -1,32 +1,31 @@
 import React, { useState } from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, TextInput, Modal, Alert } from 'react-native';
 
-export default function IadQuestions() {
+export default function IaaQuestions() {
     const [currentArea, setCurrentArea] = useState('');
     const [previousArea, setPreviousArea] = useState('');
     const [result, setResult] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
 
     const handleCalculate = () => {
-        const current = parseFloat(currentArea.replace(',', ''));
-        const previous = parseFloat(previousArea.replace(',', ''));
+        const current = parseFloat(currentArea);
+        const previous = parseFloat(previousArea);
 
-        if (isNaN(current) || isNaN(previous) || current === 0) {
+        if (isNaN(current) || isNaN(previous) || previous === 0) {
             Alert.alert("Erro", "Por favor, insira valores válidos para as áreas.");
             return;
         }
 
-        // Corrigindo a fórmula: IAD = (previous / current) * 100
-        const iad = (previous / current) * 100;
+        const iaa = ((current - previous) / previous) * 100;
 
-        setResult(iad.toFixed(1) + '%');
+        setResult(iaa.toFixed(2) + '%');
         setModalVisible(true);
     };
 
     return (
         <View style={styles.container}>
             {/* PERGUNTA 1 */}
-            <Text style={styles.question}>Qual o tamanho da área total avaliada em hectares?</Text>
+            <Text style={styles.question}>Qual a área agrícola do período atual em hectares?</Text>
             <TextInput 
                 style={styles.input}
                 value={currentArea}
@@ -35,7 +34,7 @@ export default function IadQuestions() {
             />
 
             {/* PERGUNTA 2 */}
-            <Text style={styles.question}>Qual o tamanho da área desertificada em hectares?</Text>
+            <Text style={styles.question}>Qual a área agrícola do período anterior em hectares?</Text>
             <TextInput 
                 style={styles.input}
                 value={previousArea}
@@ -45,7 +44,7 @@ export default function IadQuestions() {
 
             {/* BOTÃO DE CALCULO */}
             <TouchableOpacity style={styles.buttonCalcular} onPress={handleCalculate}>
-                <Text style={styles.selectedButtonText}>Calcular Índice de Desertificação</Text>
+                <Text style={styles.selectedButtonText}>Calcular Índice de Ocupação</Text>
             </TouchableOpacity>
 
             {/* MODAL */}
@@ -57,7 +56,7 @@ export default function IadQuestions() {
             >
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContainer}>
-                        <Text style={styles.resultado}>Índice de Desertificação: {iad}</Text>
+                        <Text style={styles.resultado}>Índice de Ocupação: {result}</Text>
                         <TouchableOpacity
                             style={styles.closeButton}
                             onPress={() => setModalVisible(false)}

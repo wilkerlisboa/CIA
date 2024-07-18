@@ -3,6 +3,8 @@ import { Text, View, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import IqrQuestions from './IqrQuestions';
 import IosQuestions from '../IOS/IosQuestions';
+import IaaQuestions from '../IAA/IaaQuestions';
+import IadQuestions from '../IAD/IadQuestions';
 
 export default function Iqr() {
   const [selectedValue, setSelectedValue] = useState('');
@@ -10,11 +12,15 @@ export default function Iqr() {
   const renderSelectedComponent = () => {
     switch (selectedValue) {
       case '1':
-        return <IosQuestions/>;
+        return <IaaQuestions />
       case '2':
-        return <IqrQuestions />;
+        return  <IadQuestions />
       case '3':
-        return <Text>Em breve</Text>;
+        return <IaaQuestions />
+      case '4':
+        return <IosQuestions />;
+      case '5':
+        return <IqrQuestions />;
       default:
         return null;
     }
@@ -29,9 +35,10 @@ export default function Iqr() {
         onValueChange={(itemValue) => setSelectedValue(itemValue)}
       >
         <Picker.Item label="Seleção do Indicador" value="" />
-        <Picker.Item label="IOS - Índice de Ocupação do Solo" value="1" />
-        <Picker.Item label="IQR - Índice de Qualidade de Resíduo Sólido" value="2" />
-        <Picker.Item label="Em breve" value="3" />
+        <Picker.Item label="IAD - Índice de de Área Desertificada  " value="2" />
+        <Picker.Item label="IAA - Índice de Variação de Área Agrícola " value="3" />
+        <Picker.Item label="IOS - Índice de Ocupação do Solo" value="4" />
+        <Picker.Item label="IQR - Índice de Qualidade de Resíduo Sólido" value="5" />
       </Picker>
       {renderSelectedComponent()}
     </View>

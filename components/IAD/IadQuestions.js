@@ -19,7 +19,7 @@ export default function IadQuestions() {
         // Corrigindo a fórmula: IAD = (previous / current) * 100
         const iad = (previous / current) * 100;
 
-        setResult(iad.toFixed(1) + '%');
+        setResult(iad.toFixed(2));
         setModalVisible(true);
     };
 
@@ -57,7 +57,7 @@ export default function IadQuestions() {
             >
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContainer}>
-                        <Text style={styles.resultado}>Índice de Desertificação: {iad}</Text>
+                        <Text style={styles.resultado}>Índice de Desertificação: {result}%</Text>
                         <TouchableOpacity
                             style={styles.closeButton}
                             onPress={() => setModalVisible(false)}
